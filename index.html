@@ -1,0 +1,308 @@
+<html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://wondaero.github.io/assets/css/normalize.css">
+    <style>
+
+        body{min-width: 320px;}
+        .container2{
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        h1,h2,h3,h4,h5,h6{margin: 0; padding: 0;}
+
+        header{
+            background: darkslategray;
+            color: #eee;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btns{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .btn-form{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        
+        .btn-calc{
+            min-width: 80px;
+            height: 40px;
+            background: darkslategray;
+            color: #fff;
+        }
+
+
+
+
+        .input-style1{position: relative; padding: 1px; box-sizing: border-box; z-index: 1;}
+        .input-style1 b{
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: scale(0); transition: transform .3s; z-index: -1;
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, navy, purple); filter: blur(5px);}
+        .input-style1 input{position: relative; background: #fff; border: 0; outline: 0;}
+
+        .input-style1 input{border: 1px solid #eee;}
+        .input-style1 input:focus + b{transform: scale(1);}
+
+
+
+        .itmList{list-style: none; padding: 0; margin: 0; border-top: 1px solid #eee;}
+        .itmList li{padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: center; position: relative; flex-wrap: wrap;}
+        .itmList li.cheapest{background: #acb9b9;}
+        .itmList input{width: 120px; height: 40px;}
+        
+        .itmList .li-content2{display: flex;}
+        
+        .itmList li > div label{display: block;}
+        .itmList li p{word-break: keep-all;}
+        
+        .itmList .li-content1{margin-right: 5px; position: relative;}
+        .itmList li .li-content1:after{
+            display: block; position: absolute; top: -30px; left: -5px;
+            border-radius: 5px; font-weight: 900; font-size: 25px; transform: rotate(-10deg); z-index: 1;
+        }
+        .itmList li.cheapest .li-content1:after{content: '더저렴'; border: 3px solid #189818; color: #189818;}
+        .itmList li.same .li-content1:after{content: '같음'; border: 3px solid #4a4ae5; color: #4a4ae5;}
+        .itmList .li-content2{margin-right: 8px;}
+        .itmList .li-content2 label:first-child{margin-right: 5px;}
+
+        .itmList .li-content4{width: 100%; text-align: center; margin: 0; padding: 0; border-radius: 10px;}
+        .itmList .li-content4.on{margin-top: 5px; padding: 10px; background: #eee;}
+        .itmList .li-content4.on b{font-size: 20px;}
+
+        .btn-x{background: 0; outline: 0; border: 0; cursor: pointer; padding: 0;}
+        .btn-x > span{padding: 0; display: inline-block; vertical-align: top; width: 30px; height: 30px; background: red; position: relative; border-radius: 50%;}
+        .btn-x > span > span{width: 3px; height: 20px; display: inline-block; position: absolute; top: 50%; left: 50%; background: #fff;}
+        .btn-x .x1{transform: translate(-50%, -50%) rotate(45deg);}
+        .btn-x .x2{transform: translate(-50%, -50%) rotate(-45deg);}
+
+        .btn-add{background: 0; outline: 0; border: 0; cursor: pointer; padding: 0;}
+        .btn-add > span{padding: 0; display: inline-block; vertical-align: top; width: 30px; height: 30px; background: dodgerblue; position: relative; border-radius: 50%;}
+        .btn-add > span > span{width: 5px; height: 20px; display: inline-block; position: absolute; top: 50%; left: 50%; background: #fff; border-radius: 30px;}
+        .btn-add .add1{transform: translate(-50%, -50%);}
+        .btn-add .add2{transform: translate(-50%, -50%) rotate(90deg);}
+
+        .btn-add-space{text-align: center; border-bottom: 1px solid #eee; padding: 10px;}
+
+
+        @media (max-width: 640px){
+            ul .li-content2{flex-direction: column;}
+            .itmList .li-content2 label:first-child{margin-right: 0; margin-bottom: 5px;}
+        }
+
+        
+    </style>
+</head>
+<body>
+    <header>
+        <h1>그래서 얼마?</h1>
+    </header>
+    <section class="container2">
+        <div class="btns">
+            <span></span>
+            <button id="calc" class="btn-form btn-calc"><b>계산</b></button>
+        </div>
+        <ul id="list" class="itmList"></ul>
+        <div class="btn-add-space">
+            <button id="addBtn" class="btn-add">
+                <span>
+                    <span class="add1"></span>
+                    <span class="add2"></span>
+                </span>
+            </button>
+        </div>
+    </section>
+
+    <script>
+
+        const qs = (trg) => document.querySelector(trg);
+        const qsa = (trgs) => document.querySelectorAll(trgs);
+        const addBtn = qs('#addBtn');
+        const list = qs('#list');
+        const calcBtn = qs('#calc');
+
+
+        function removeItem (trg) {
+            if(list.querySelectorAll('li').length < 3){
+                alert('최소 2개는 남겨야 합니다.');
+                return;
+            }
+            if(!confirm('삭제하시겠습니까?')) return;
+
+            const li = trg.closest('li');
+
+            li.remove();
+        }
+
+        const calcTo1 = (p, c)  => p / c;
+
+        window.onload = () => {
+            const itemList = [];
+
+            const qs = (trg) => document.querySelector(trg);
+            const qsa = (trgs) => document.querySelectorAll(trgs);
+            
+            const addBtn = qs('#addBtn');
+            const list = qs('#list');
+
+            addBtn.onclick = addItem;
+
+            
+            function addItem(){
+
+
+                const idx = list.querySelectorAll('li').length + 1;
+                
+                const li = document.createElement('li');
+
+                li.innerHTML = `
+                    <div class="li-content1">
+                        <label class="input-style1">
+                            <input type="text" name="title" placeholder="타이틀${idx}">
+                            <b></b>
+                        </label>
+                    </div>
+                    <div class="li-content2">
+                        <label class="input-style1">
+                            <input type="number" name="price" placeholder="가격(필수${idx})"><b></b></label><label class="input-style1">
+                            <input type="number" name="unit" placeholder="단위(필수${idx})">
+                            <b></b>
+                        </label>
+                    </div>
+                    <div>
+                        <button class="btn-x" onclick="removeItem(this);">
+                            <span>
+                                <span class="x1"></span>
+                                <span class="x2"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <p data-id="result" class="li-content4"></p>
+                `;
+
+                list.append(li);
+            }
+
+            addItem();
+            addItem();
+
+            calcBtn.onclick = () => {
+                const lis = list.querySelectorAll('li');
+
+                itemList.length = 0;
+
+                isEmpty = false;
+
+                let cheaperValue;
+
+                let sameIdxArr = [];
+                let cheaperIdxArr = [];
+
+
+                for(let i = 0; i < lis.length; i++){
+                    const li = lis[i];
+
+                    li.classList.remove('cheapest');
+                    li.classList.remove('same');
+
+                    const title = li.querySelector('[name^="title"]').value;
+                    const price = li.querySelector('[name^="price"]').value;
+                    const unit = li.querySelector('[name^="unit"]').value;
+
+
+                    const tmpObj = {
+                        title,
+                        price,
+                        unit
+                    };
+
+                    if(tmpObj.price === '' || tmpObj.unit === ''){
+                        isEmpty = true;
+                        break;
+                    }
+
+                    itemList.push(tmpObj);
+
+                    const val = calcTo1(tmpObj.price, tmpObj.unit);
+
+                    //판별
+                    if(i === 0){
+                        cheaperValue = val;
+                        cheaperIdxArr.push(i);
+                        sameIdxArr.push(i);
+                    }else{
+                        if(val < cheaperValue){
+                            cheaperValue = val;
+                            sameIdxArr.length = 0;
+                            cheaperIdxArr.length = 0;
+                            cheaperIdxArr.push(i);
+                            sameIdxArr.push(i);
+                        }else if(val === cheaperValue){
+                            sameIdxArr.push(i);
+                            cheaperIdxArr.push(i);
+                        }
+                    }
+
+                    const p = li.querySelector('p');
+                    
+                    const title2 = tmpObj.title || li.querySelector('input').getAttribute('placeholder');
+                    const price2 = calcTo1(tmpObj.price, tmpObj.unit);
+                    
+
+                    p.innerHTML = '';
+                    
+                    p.classList.add('on');
+                    // p.innerHTML += '<b>' + title2 + '</b>은(는) ';
+                    // p.innerHTML += '<b>1단위</b>당 '
+                    // p.innerHTML += '<b>' + price2 + '가격</b>입니다.';
+
+                    p.innerHTML = `
+                        <span><b>${title2}은(는) </b></span>
+                        <span><b>1단위당 </b></span>
+                        <span><b>${price2}가격</b>입니다</span>
+                    `;
+                }
+
+                if(isEmpty){
+                    alert('빠뜨린 항목이 있습니다!');
+                    return;
+                }
+
+                // console.log(sameIdxArr);
+                // console.log(cheaperIdxArr);
+
+                setUI(cheaperIdxArr, sameIdxArr);
+            }
+
+            function setUI (c, s) {
+                console.log(c);
+                const lis = list.querySelectorAll('li');
+                lis.forEach(li => li.classList.remove('cheapest'));
+                lis.forEach(li => li.classList.remove('same'));
+
+                c.forEach(c1 => lis[c1].classList.add('cheapest'));
+                if(s.length > 1) s.forEach((s1) => lis[s1].classList.add('same'));
+            }
+
+        };
+
+
+
+
+    </script>
+
+</body></html>
